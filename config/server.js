@@ -13,25 +13,42 @@ var expressValidator = require('express-validator');
 /* iniciar o objeto do express */
 var app = express();
 
-/* setar as variáveis 'view engine' e 'views' do express */
+/* 
+ * Configuração da view engine
+ * Define EJS como template engine e pasta de views
+ */
 app.set('view engine', 'ejs');
 app.set('views', './app/views');
 
-/* configurar o middleware express.static */
+/* 
+ * Configuração de arquivos estáticos
+ * Permite acesso a CSS, JS, imagens da pasta public
+ */
 app.use(express.static('./app/public'));
 
-/* conficurar o middleware body-parser */
+/* 
+ * Configuração do body-parser
+ * Permite capturar dados de formulários via req.body
+ */
 app.use(bodyParser.urlencoded({extended: true}));
 
-/* configurar o middleware express validator */
+/* 
+ * Configuração do express-validator
+ * Habilita validações de campos do formulário
+ */
 app.use(expressValidator());
 
-/* efetua o autoload das rotas, dos models e dos controllers para o obj app */
+/* 
+ * Autoload de módulos usando Consign
+ * Carrega automaticamente rotas, models e controllers
+ * Ordem: routes → models → controllers
+ * Todos são injetados no objeto app
+ */
 consign()
-	.include('app/routes')
-	.then('app/models')
-	.then('app/controllers')
-	.into(app);
+	.include('app/routes')      // Carrega as rotas primeiro
+	.then('app/models')          // Depois os models (se houver)
+	.then('app/controllers')     // Por último os controllers
+	.into(app);                  // Injeta tudo no objeto app
 
-/* exportar o objeto app */
+/* Exporta o app configurado para ser usado no arquivo principal */
 module.exports = app;
